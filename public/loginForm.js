@@ -1,29 +1,26 @@
-$(document).ready(function() {
-    $('#login-form').on('submit', function(event) {
-        event.preventDefault(); // Prevenir el envío normal del formulario
+document.getElementById('login-form').addEventListener('submit', function (e) {
+    e.preventDefault();
 
-        const username = $('#username').val();
-        const password = $('#password').val();
+    const username = document.getElementById('username').value;
+    const password = document.getElementById('password').value;
 
-        // Llamada al endpoint de login
-        $.ajax({
-            url: '/api/login',
-            method: 'POST',
-            contentType: 'application/json',
-            data: JSON.stringify({
-                username: username,
-                password: password
-            }),
-            success: function(response) {
-                // Manejar el inicio de sesión exitoso
-                alert('Inicio de sesión exitoso');
-                // Redirigir a la página de listado o hacer lo que necesites
-                window.location.href = 'index.html';
-            },
-            error: function(xhr) {
-                // Manejar error de inicio de sesión
-                alert('Error en el inicio de sesión: ' + xhr.responseJSON.message);
-            }
-        });
+    const settings = {
+        url: 'https://api.zippin.com.ar/v2/login', // Asegúrate de que esta URL sea la correcta
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        data: JSON.stringify({
+            usuario: username,
+            clave: password
+        })
+    };
+
+    $.ajax(settings).done(function (response) {
+        // Almacena el token de autorización en localStorage
+        localStorage.setItem('auth', response.token); // Ajusta esto según el formato de la respuesta
+        window.location.href = 'index.html'; // Redirigir al listado después de iniciar sesión
+    }).fail(function () {
+        alert('Error al iniciar sesión. Verifica tus credenciales.');
     });
 });

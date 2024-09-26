@@ -2,6 +2,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // Verificar si el usuario ha iniciado sesión
     if (!localStorage.getItem('auth')) {
         window.location.href = 'login.html';  // Redirigir al login si no ha iniciado sesión
+        return; // Asegúrate de salir de la función después de redirigir
     }
 
     // Procesar archivo XLS
