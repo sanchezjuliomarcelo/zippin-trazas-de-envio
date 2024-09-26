@@ -1,17 +1,12 @@
 {
-  "name": "tu-proyecto",
+  "name": "zippin-tracking-app",
   "version": "1.0.0",
-  "description": "",
   "main": "index.js",
-  "type": "module", 
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node index.js"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
   "dependencies": {
-    "axios": "^x.x.x",
-    "express": "^x.x.x"
-  }
+    "axios": "^0.21.1"
+  },
+  "type": "module"
 }

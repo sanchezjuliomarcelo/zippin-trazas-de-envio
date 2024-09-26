@@ -1,30 +1,19 @@
-// api/login.js
-import { json } from 'body-parser';
-import axios from 'axios';
+import { NextResponse } from 'next/server';
 
-export default async function handler(req, res) {
-  if (req.method === 'POST') {
-    const { email, password } = req.body;
+// Endpoint para manejar la autenticación
+export async function POST(request) {
+    const { username, password } = await request.json();
 
+    // Variables de entorno
     const apiToken = process.env.KEY;
     const apiSecret = process.env.SECRET;
 
-    // Lógica de autenticación con Zippin usando axios
-    try {
-      const response = await axios.get('https://api.zippin.com.ar/v2/shipments', {
-        headers: {
-          'Authorization': `Basic ${Buffer.from(`${apiToken}:${apiSecret}`).toString('base64')}`,
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-        }
-      });
-      res.status(200).json(response.data);
-    } catch (error) {
-      res.status(500).json({ message: 'Error en la autenticación' });
+    // Validación de las credenciales
+    if (username === apiToken && password === apiSecret) {
+        // Respuesta de éxito
+        return NextResponse.json({ message: 'Login successful' });
+    } else {
+        // Respuesta de error
+        return NextResponse.json({ message: 'Invalid credentials' }, { status: 401 });
     }
-  } else {
-    // Método no permitido
-    res.setHeader('Allow', ['POST']);
-    res.status(405).end(`Método ${req.method} no permitido`);
-  }
 }
