@@ -1,19 +1,15 @@
 import { NextResponse } from 'next/server';
 
-// Endpoint para manejar la autenticación
 export async function POST(request) {
-    const { username, password } = await request.json();
+    const { usuario, clave } = await request.json();
 
-    // Variables de entorno
-    const apiToken = process.env.KEY;
-    const apiSecret = process.env.SECRET;
+    // Aquí comparas las credenciales con las variables de entorno
+    const validUser = process.env.USUARIO === usuario;
+    const validPassword = process.env.CLAVE === clave;
 
-    // Validación de las credenciales
-    if (username === apiToken && password === apiSecret) {
-        // Respuesta de éxito
-        return NextResponse.json({ message: 'Login successful' });
+    if (validUser && validPassword) {
+        return NextResponse.json({ success: true });
     } else {
-        // Respuesta de error
-        return NextResponse.json({ message: 'Invalid credentials' }, { status: 401 });
+        return NextResponse.json({ success: false }, { status: 401 });
     }
 }
