@@ -35,7 +35,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
     async function getTrackingData(id) {
         try {
-            const response = await fetch('/api/getCredentials');
+            // Cambiar la ruta a la correcta para Netlify Functions
+            const response = await fetch('.netlify/functions/getCredentials'); 
             
             if (!response.ok) {
                 throw new Error('Error al obtener credenciales'); // Manejar si no se encuentra
