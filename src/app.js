@@ -33,25 +33,38 @@ document.addEventListener('DOMContentLoaded', function () {
         reader.readAsArrayBuffer(file);
     });
 
-    function getTrackingData(id) {
-        const apiKey = localStorage.getItem('auth'); 
+    async function fetchCredentials() {
+        const response = await fetch('/.netlify/functions/getCredentials');
+        if (response.ok) {
+            const data = await response.json();
+            return data; // Devuelve el objeto con KEY y SECRET
+        } else {
+            throw new Error('Error al obtener las credenciales');
+        }
+    }
 
-        const settings = {
-            url: `https://api.zippin.com.ar/v2/shipments/${id}/tracking`,
-            method: "GET",
-            timeout: 0,
-            headers: {
-                "Accept": "application/json",
-                "Content-Type": "application/json",
-                "Authorization": `Basic ${btoa(localStorage.getItem('KEY') + ':' + localStorage.getItem('SECRET'))}` // Basic Auth
-            }
-        };
+    async function getTrackingData(id) {
+        try {
+            const { KEY, SECRET } = await fetchCredentials(); // Llama a la función que obtiene las credenciales
 
-        $.ajax(settings).done(function (response) {
-            displayTrackingData(response, id);
-        }).fail(function () {
-            alert(`Error al obtener el seguimiento del ID ${id}`);
-        });
+            const settings = {
+                url: `https://api.zippin.com.ar/v2/shipments/${id}/tracking`,
+                method: "GET",
+                headers: {
+                    "Accept": "application/json",
+                    "Content-Type": "application/json",
+                    "Authorization": `Basic ${btoa(KEY + ':' + SECRET)}` // Basic Auth
+                }
+            };
+
+            $.ajax(settings).done(function (response) {
+                displayTrackingData(response, id);
+            }).fail(function () {
+                alert(`Error al obtener el seguimiento del ID ${id}`);
+            });
+        } catch (error) {
+            console.error(error);
+        }
     }
 
     function displayTrackingData(data, id) {
