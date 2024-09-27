@@ -5,21 +5,28 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Seguimiento de Envíos</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
-<div class="container">
-    <h1>Listado de Seguimientos</h1>
-    <p>Crear un archivo de tipo xls y en la columna "A" agregar los "id´s" de envío uno por cada linea, guardar y cargar para obtener las trazas de cada uno</p>
+<div class="container mt-5">
+    <h1 class="text-center">Listado de Seguimientos</h1>
 
-    <form id="file-upload-form">
-        <input type="file" id="file-input" accept=".xls, .xlsx" required>
+    <div class="alert alert-info" role="alert">
+        Crear un archivo de tipo XLS y en la columna "A" agregar los "ID's" de envío uno por cada línea, guardar y cargar para obtener las trazas de cada uno.
+    </div>
+
+    <form id="file-upload-form" class="mb-4">
+        <div class="form-group">
+            <label for="file-input">Seleccionar archivo:</label>
+            <input type="file" id="file-input" class="form-control-file" accept=".xls, .xlsx" required>
+        </div>
         <button type="submit" class="btn btn-primary">Cargar</button>
     </form>
 
     <button id="export-button" class="btn btn-success" style="display: none;">Exportar a Excel</button>
 
-    <table id="tracking-table" class="table">
+    <table id="tracking-table" class="table mt-4">
         <thead>
             <tr>
                 <th>ID</th>
@@ -33,16 +40,12 @@
         </tbody>
     </table>
 
-    <div class="alert alert-info" role="alert">
-        En un archivo de tipo XLS en la columna A, agregar los ID de envío uno abajo del otro, guardar y cargar para obtener las trazas de cada uno.
-    </div>
+    <footer class="footer bg-light text-center mt-5">
+        <div class="container">
+            <span class="text-muted">Desarrollado por Julio Sanchez - Depto Ecommerce B2C - PCARTS ARGENTINA SA</span>
+        </div>
+    </footer>
 </div>
-
-<footer class="footer bg-light text-center">
-    <div class="container">
-        <span class="text-muted">Desarrollado por Julio Sanchez - Departamento Ecommerce B2C para PC ARTS ARGENTINA SA</span>
-    </div>
-</footer>
 
 <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
 <script src="https://unpkg.com/xlsx/dist/xlsx.full.min.js"></script>
