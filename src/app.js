@@ -21,9 +21,9 @@ document.addEventListener('DOMContentLoaded', function () {
             const workbook = XLSX.read(data, { type: 'array' });
             const firstSheetName = workbook.SheetNames[0];
             const worksheet = workbook.Sheets[firstSheetName];
-            const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+            const jsonData = XLSX.utils.sheet_to_json(worksheet);
 
-            const ids = jsonData.map(row => row[0]); // Acceder a la columna A
+            const ids = jsonData.map(row => row.ID);
             ids.forEach(id => {
                 getTrackingData(id);
             });
@@ -32,16 +32,23 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     function getTrackingData(id) {
-        $.ajax({
-            url: '/.netlify/functions/tracking',  // Cambia esto
-            method: 'POST',
-            contentType: 'application/json',
-            data: JSON.stringify({ id }),
-        })
-        .done(function (response) {
+        const apiKey = localStorage.getItem('auth'); 
+
+        const settings = {
+            url: `https://api.zippin.com.ar/v2/shipments/${id}/tracking`,
+            method: "GET",
+            timeout: 0,
+            headers: {
+                "Accept": "application/json",
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${apiKey}`
+            }
+        };
+
+        $.ajax(settings).done(function (response) {
+            console.log(response); // Imprimir la respuesta para depuración
             displayTrackingData(response, id);
-        })
-        .fail(function () {
+        }).fail(function () {
             alert(`Error al obtener el seguimiento del ID ${id}`);
         });
     }
@@ -49,17 +56,24 @@ document.addEventListener('DOMContentLoaded', function () {
     function displayTrackingData(data, id) {
         const tableBody = document.querySelector('#tracking-table tbody');
 
-        data.forEach(trackingEvent => {
-            const row = document.createElement('tr');
-            row.innerHTML = `
-                <td>${id}</td>
-                <td>${trackingEvent.status.visible_name}</td>
-                <td>${new Date(trackingEvent.created_at).toLocaleString()}</td>
-                <td>${trackingEvent.status.name}</td>
-            `;
-            tableBody.appendChild(row);
-        });
+        // Verifica si `data` es un array
+        if (Array.isArray(data)) {
+            data.forEach(trackingEvent => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${id}</td>
+                    <td>${trackingEvent.status.visible_name}</td>
+                    <td>${new Date(trackingEvent.created_at).toLocaleString()}</td>
+                    <td>${trackingEvent.status.name}</td>
+                `;
+                tableBody.appendChild(row);
+            });
+        } else {
+            // Maneja el caso en que no es un array
+            alert(`Error: La respuesta no es un array. Recibido: ${JSON.stringify(data)}`);
+        }
 
+        // Muestra el botón de exportación
         document.getElementById('export-button').style.display = 'block';
     }
 
