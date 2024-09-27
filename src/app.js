@@ -21,9 +21,9 @@ document.addEventListener('DOMContentLoaded', function () {
             const workbook = XLSX.read(data, { type: 'array' });
             const firstSheetName = workbook.SheetNames[0];
             const worksheet = workbook.Sheets[firstSheetName];
-            const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 }); // Cambiamos a header: 1 para obtener un array de arrays
+            const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
 
-            const ids = jsonData.map(row => row[0]).filter(id => id); // Extraemos solo la primera columna y filtramos vacíos
+            const ids = jsonData.map(row => row[0]); // Acceder a la columna A
             ids.forEach(id => {
                 getTrackingData(id);
             });
@@ -32,7 +32,9 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     function getTrackingData(id) {
-        const apiKey = localStorage.getItem('auth'); 
+        const username = process.env.KEY; // Variable de entorno KEY
+        const password = process.env.SECRET; // Variable de entorno SECRET
+        const apiKey = localStorage.getItem('auth');
 
         const settings = {
             url: `https://api.zippin.com.ar/v2/shipments/${id}/tracking`,
@@ -41,7 +43,7 @@ document.addEventListener('DOMContentLoaded', function () {
             headers: {
                 "Accept": "application/json",
                 "Content-Type": "application/json",
-                "Authorization": `Bearer ${apiKey}`
+                "Authorization": "Basic " + btoa(`${username}:${password}`) // Autenticación básica
             }
         };
 
