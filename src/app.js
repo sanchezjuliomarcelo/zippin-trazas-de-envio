@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', function () {
     if (!localStorage.getItem('auth')) {
-        window.location.href = 'login.html'; 
+        window.location.href = 'index.html'; 
         return; 
     }
 
@@ -24,7 +24,6 @@ document.addEventListener('DOMContentLoaded', function () {
             const jsonData = XLSX.utils.sheet_to_json(worksheet);
 
             const ids = jsonData.map(row => row.ID);
-
             ids.forEach(id => {
                 getTrackingData(id);
             });
@@ -48,8 +47,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         $.ajax(settings).done(function (response) {
             displayTrackingData(response, id);
-        }).fail(function (jqXHR, textStatus, errorThrown) {
-            console.error(`Error al obtener el seguimiento del ID ${id}: ${textStatus}`, errorThrown);
+        }).fail(function () {
             alert(`Error al obtener el seguimiento del ID ${id}`);
         });
     }
@@ -59,24 +57,12 @@ document.addEventListener('DOMContentLoaded', function () {
 
         data.forEach(trackingEvent => {
             const row = document.createElement('tr');
-
-            const idCell = document.createElement('td');
-            idCell.textContent = id;
-
-            const statusCell = document.createElement('td');
-            statusCell.textContent = trackingEvent.status.visible_name;
-
-            const createdAtCell = document.createElement('td');
-            createdAtCell.textContent = new Date(trackingEvent.created_at).toLocaleString();
-
-            const currentLocationCell = document.createElement('td');
-            currentLocationCell.textContent = trackingEvent.status.name;
-
-            row.appendChild(idCell);
-            row.appendChild(statusCell);
-            row.appendChild(createdAtCell);
-            row.appendChild(currentLocationCell);
-
+            row.innerHTML = `
+                <td>${id}</td>
+                <td>${trackingEvent.status.visible_name}</td>
+                <td>${new Date(trackingEvent.created_at).toLocaleString()}</td>
+                <td>${trackingEvent.status.name}</td>
+            `;
             tableBody.appendChild(row);
         });
 
