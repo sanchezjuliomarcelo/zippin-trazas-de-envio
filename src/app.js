@@ -21,11 +21,13 @@ document.addEventListener('DOMContentLoaded', function () {
             const workbook = XLSX.read(data, { type: 'array' });
             const firstSheetName = workbook.SheetNames[0];
             const worksheet = workbook.Sheets[firstSheetName];
-            const jsonData = XLSX.utils.sheet_to_json(worksheet);
+            const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 }); // Leer sin encabezados
 
-            const ids = jsonData.map(row => row.ID);
+            const ids = jsonData.map(row => row[0]); // Obtener IDs de la columna A
             ids.forEach(id => {
-                getTrackingData(id);
+                if (id) { // Verificar que el ID no esté vacío
+                    getTrackingData(id);
+                }
             });
         };
         reader.readAsArrayBuffer(file);
@@ -41,12 +43,11 @@ document.addEventListener('DOMContentLoaded', function () {
             headers: {
                 "Accept": "application/json",
                 "Content-Type": "application/json",
-                "Authorization": `Bearer ${apiKey}`
+                "Authorization": `Basic ${btoa(localStorage.getItem('KEY') + ':' + localStorage.getItem('SECRET'))}` // Basic Auth
             }
         };
 
         $.ajax(settings).done(function (response) {
-            console.log(response); // Imprimir la respuesta para depuración
             displayTrackingData(response, id);
         }).fail(function () {
             alert(`Error al obtener el seguimiento del ID ${id}`);
@@ -56,8 +57,7 @@ document.addEventListener('DOMContentLoaded', function () {
     function displayTrackingData(data, id) {
         const tableBody = document.querySelector('#tracking-table tbody');
 
-        // Verifica si `data` es un array
-        if (Array.isArray(data)) {
+        if (Array.isArray(data)) { // Verificar si data es un array
             data.forEach(trackingEvent => {
                 const row = document.createElement('tr');
                 row.innerHTML = `
@@ -69,11 +69,9 @@ document.addEventListener('DOMContentLoaded', function () {
                 tableBody.appendChild(row);
             });
         } else {
-            // Maneja el caso en que no es un array
-            alert(`Error: La respuesta no es un array. Recibido: ${JSON.stringify(data)}`);
+            alert(`No se encontraron eventos de seguimiento para el ID ${id}`);
         }
 
-        // Muestra el botón de exportación
         document.getElementById('export-button').style.display = 'block';
     }
 
