@@ -21,9 +21,9 @@ document.addEventListener('DOMContentLoaded', function () {
             const workbook = XLSX.read(data, { type: 'array' });
             const firstSheetName = workbook.SheetNames[0];
             const worksheet = workbook.Sheets[firstSheetName];
-            const jsonData = XLSX.utils.sheet_to_json(worksheet);
+            const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 }); // Cambiamos a header: 1 para obtener un array de arrays
 
-            const ids = jsonData.map(row => row.ID);
+            const ids = jsonData.map(row => row[0]).filter(id => id); // Extraemos solo la primera columna y filtramos vacíos
             ids.forEach(id => {
                 getTrackingData(id);
             });
