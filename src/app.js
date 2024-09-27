@@ -34,26 +34,32 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     async function getTrackingData(id) {
-        // Realiza la llamada a tu servidor para obtener el KEY y SECRET
-        const response = await fetch('/api/getCredentials');
-        const credentials = await response.json();
-        
-        const settings = {
-            url: `https://api.zippin.com.ar/v2/shipments/${id}/tracking`,
-            method: "GET",
-            headers: {
-                "Accept": "application/json",
-                "Content-Type": "application/json",
-                "Authorization": `Basic ${btoa(credentials.KEY + ':' + credentials.SECRET)}` // Basic Auth
+        try {
+            const response = await fetch('/api/getCredentials');
+            
+            if (!response.ok) {
+                throw new Error('Error al obtener credenciales'); // Manejar si no se encuentra
             }
-        };
-
-        $.ajax(settings).done(function (response) {
-            displayTrackingData(response, id);
-        }).fail(function () {
-            alert(`Error al obtener el seguimiento del ID ${id}`);
-        });
+            
+            const credentials = await response.json();
+    
+            const settings = {
+                url: `https://api.zippin.com.ar/v2/shipments/${id}/tracking`,
+                method: "GET",
+                headers: {
+                    "Accept": "application/json",
+                    "Content-Type": "application/json",
+                    "Authorization": `Basic ${btoa(credentials.KEY + ':' + credentials.SECRET)}` // Basic Auth
+                }
+            };
+    
+            const trackingResponse = await $.ajax(settings);
+            displayTrackingData(trackingResponse, id);
+        } catch (error) {
+            alert(error.message); // Muestra el mensaje de error
+        }
     }
+    
 
     function displayTrackingData(data, id) {
         const tableBody = document.querySelector('#tracking-table tbody');
