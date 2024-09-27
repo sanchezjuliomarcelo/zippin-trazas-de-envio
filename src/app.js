@@ -1,11 +1,9 @@
 document.addEventListener('DOMContentLoaded', function () {
-    // Verificar si el usuario ha iniciado sesión
     if (!localStorage.getItem('auth')) {
-        window.location.href = 'login.html';  // Redirigir al login si no ha iniciado sesión
-        return; // Asegúrate de salir de la función después de redirigir
+        window.location.href = 'login.html'; 
+        return; 
     }
 
-    // Procesar archivo XLS
     document.getElementById('file-upload-form').addEventListener('submit', function (e) {
         e.preventDefault();
 
@@ -35,7 +33,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     function getTrackingData(id) {
-        const apiKey = localStorage.getItem('auth'); // Asumiendo que guardaste el token en localStorage
+        const apiKey = localStorage.getItem('auth'); 
 
         const settings = {
             url: `https://api.zippin.com.ar/v2/shipments/${id}/tracking`,
@@ -44,13 +42,14 @@ document.addEventListener('DOMContentLoaded', function () {
             headers: {
                 "Accept": "application/json",
                 "Content-Type": "application/json",
-                "Authorization": `Bearer ${apiKey}` // Utiliza el token aquí
+                "Authorization": `Bearer ${apiKey}`
             }
         };
 
         $.ajax(settings).done(function (response) {
             displayTrackingData(response, id);
-        }).fail(function () {
+        }).fail(function (jqXHR, textStatus, errorThrown) {
+            console.error(`Error al obtener el seguimiento del ID ${id}: ${textStatus}`, errorThrown);
             alert(`Error al obtener el seguimiento del ID ${id}`);
         });
     }
