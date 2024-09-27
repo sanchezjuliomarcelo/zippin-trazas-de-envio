@@ -32,24 +32,16 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     function getTrackingData(id) {
-        const username = process.env.KEY; // Variable de entorno KEY
-        const password = process.env.SECRET; // Variable de entorno SECRET
-        const apiKey = localStorage.getItem('auth');
-
-        const settings = {
-            url: `https://api.zippin.com.ar/v2/shipments/${id}/tracking`,
-            method: "GET",
-            timeout: 0,
-            headers: {
-                "Accept": "application/json",
-                "Content-Type": "application/json",
-                "Authorization": "Basic " + btoa(`${username}:${password}`) // Autenticación básica
-            }
-        };
-
-        $.ajax(settings).done(function (response) {
+        $.ajax({
+            url: '/.netlify/functions/tracking',  // Cambia esto
+            method: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify({ id }),
+        })
+        .done(function (response) {
             displayTrackingData(response, id);
-        }).fail(function () {
+        })
+        .fail(function () {
             alert(`Error al obtener el seguimiento del ID ${id}`);
         });
     }
