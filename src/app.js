@@ -4,7 +4,7 @@ document.addEventListener('DOMContentLoaded', function () {
         return; 
     }
 
-    document.getElementById('file-upload-form').addEventListener('submit', function (e) {
+    document.getElementById('file-upload-form').addEventListener('submit', async function (e) {
         e.preventDefault();
 
         const fileInput = document.getElementById('file-input');
@@ -24,47 +24,49 @@ document.addEventListener('DOMContentLoaded', function () {
             const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 }); // Leer sin encabezados
 
             const ids = jsonData.map(row => row[0]); // Obtener IDs de la columna A
-            ids.forEach(id => {
-                if (id) { // Verificar que el ID no esté vacío
-                    getTrackingData(id);
-                }
-            });
+            const validIds = ids.filter(id => id); // Filtrar IDs no vacíos
+
+            // Mostrar contador
+            const counterDiv = document.getElementById('counter');
+            counterDiv.style.display = 'block';
+            counterDiv.innerHTML = `Se encontraron ${validIds.length} ID(s) en el archivo.`;
+
+            // Mostrar "reloj" de carga
+            const loadingDiv = document.createElement('div');
+            loadingDiv.className = 'alert alert-warning';
+            loadingDiv.innerHTML = 'Cargando...';
+            document.body.appendChild(loadingDiv);
+
+            // Obtener datos de seguimiento
+            for (const id of validIds) {
+                await getTrackingData(id);
+            }
+
+            // Ocultar "reloj" de carga
+            loadingDiv.remove();
         };
         reader.readAsArrayBuffer(file);
     });
 
-    async function fetchCredentials() {
-        const response = await fetch('/.netlify/functions/getCredentials');
-        if (response.ok) {
-            const data = await response.json();
-            return data; // Devuelve el objeto con KEY y SECRET
-        } else {
-            throw new Error('Error al obtener las credenciales');
-        }
-    }
-
     async function getTrackingData(id) {
-        try {
-            const { KEY, SECRET } = await fetchCredentials(); // Llama a la función que obtiene las credenciales
+        const response = await fetch('/.netlify/functions/getCredentials');
+        const credentials = await response.json();
+        
+        const settings = {
+            url: `https://api.zippin.com.ar/v2/shipments/${id}/tracking`,
+            method: "GET",
+            headers: {
+                "Accept": "application/json",
+                "Content-Type": "application/json",
+                "Authorization": `Basic ${btoa(credentials.KEY + ':' + credentials.SECRET)}` // Basic Auth
+            }
+        };
 
-            const settings = {
-                url: `https://api.zippin.com.ar/v2/shipments/${id}/tracking`,
-                method: "GET",
-                headers: {
-                    "Accept": "application/json",
-                    "Content-Type": "application/json",
-                    "Authorization": `Basic ${btoa(KEY + ':' + SECRET)}` // Basic Auth
-                }
-            };
-
-            $.ajax(settings).done(function (response) {
-                displayTrackingData(response, id);
-            }).fail(function () {
-                alert(`Error al obtener el seguimiento del ID ${id}`);
-            });
-        } catch (error) {
-            console.error(error);
-        }
+        $.ajax(settings).done(function (response) {
+            displayTrackingData(response, id);
+        }).fail(function () {
+            alert(`Error al obtener el seguimiento del ID ${id}`);
+        });
     }
 
     function displayTrackingData(data, id) {
@@ -86,11 +88,20 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         document.getElementById('export-button').style.display = 'block';
+        document.getElementById('clear-button').style.display = 'block'; // Mostrar botón de borrar
     }
 
     document.getElementById('export-button').addEventListener('click', function () {
         const table = document.getElementById('tracking-table');
         const wb = XLSX.utils.table_to_book(table, { sheet: "Tracking" });
         XLSX.writeFile(wb, 'tracking_data.xlsx');
+    });
+
+    document.getElementById('clear-button').addEventListener('click', function () {
+        const tableBody = document.querySelector('#tracking-table tbody');
+        tableBody.innerHTML = ''; // Limpiar la tabla
+        document.getElementById('counter').style.display = 'none'; // Ocultar contador
+        document.getElementById('export-button').style.display = 'none'; // Ocultar botón de exportar
+        this.style.display = 'none'; // Ocultar botón de borrar
     });
 });
