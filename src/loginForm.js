@@ -5,13 +5,18 @@ document.getElementById('login-form').addEventListener('submit', async function 
     const password = document.getElementById('password').value;
 
     try {
-        const response = await fetch('/api/login', { // Cambia esto según la ruta de tu API
+        const response = await fetch('/api/login', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({ usuario: username, clave: password }),
         });
+
+        // Verifica que la respuesta sea válida
+        if (!response.ok) {
+            throw new Error('Error en la respuesta del servidor');
+        }
 
         const data = await response.json();
 
@@ -27,13 +32,3 @@ document.getElementById('login-form').addEventListener('submit', async function 
     }
 });
 
-function showAlert(message, type) {
-    const alertPlaceholder = document.createElement('div');
-    alertPlaceholder.innerHTML = `
-        <div class="alert alert-${type} alert-dismissible fade show" role="alert">
-            ${message}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-    `;
-    document.body.prepend(alertPlaceholder);
-}
