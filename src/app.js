@@ -1,8 +1,37 @@
+// Función para borrar productos en pantalla
+function borrarProductos() {
+    $('#tracking-table tbody').empty();
+    $('#productCount').text('0');
+}
+
+// Función para mostrar indicador de carga
+function mostrarIndicadorCarga() {
+    const indicador = `
+        <div id="indicadorCarga" class="text-center">
+            <p>Cargando...</p>
+            <img src="https://mysejahtera.malaysia.gov.my/register/images/loader.gif" alt="Cargando" />
+        </div>
+    `;
+    $('body').append(indicador);
+}
+
+// Función para ocultar indicador de carga
+function ocultarIndicadorCarga() {
+    $('#indicadorCarga').remove();
+}
+
 document.addEventListener('DOMContentLoaded', function () {
     if (!localStorage.getItem('auth')) {
         window.location.href = 'index.html'; 
         return; 
     }
+
+    // Agregar botón de borrar productos en pantalla
+    const botonBorrar = `<button id="borrar-productos" class="btn btn-danger">Borrar todos los datos</button>`;
+    $('#file-upload-form').append(botonBorrar);
+
+    // Evento para borrar productos
+    $('#borrar-productos').click(borrarProductos);
 
     document.getElementById('file-upload-form').addEventListener('submit', function (e) {
         e.preventDefault();
@@ -14,6 +43,9 @@ document.addEventListener('DOMContentLoaded', function () {
             alert('Por favor, selecciona un archivo.');
             return;
         }
+
+        // Mostrar el indicador de carga
+        mostrarIndicadorCarga();
 
         const reader = new FileReader();
         reader.onload = function (e) {
@@ -29,6 +61,9 @@ document.addEventListener('DOMContentLoaded', function () {
                     getTrackingData(id);
                 }
             });
+
+            // Ocultar el indicador de carga cuando se terminen de procesar los datos
+            ocultarIndicadorCarga();
         };
         reader.readAsArrayBuffer(file);
     });
@@ -60,7 +95,6 @@ document.addEventListener('DOMContentLoaded', function () {
             alert(error.message); // Muestra el mensaje de error
         }
     }
-    
 
     function displayTrackingData(data, id) {
         const tableBody = document.querySelector('#tracking-table tbody');
