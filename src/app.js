@@ -12,7 +12,17 @@ function borrarEnvios() {
 // Función para mostrar indicador de carga con GIF
 function mostrarIndicadorCarga() {
     const indicador = `
-        <div id="indicadorCarga" class="text-center">
+        <div id="indicadorCarga" style="
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: rgba(255, 255, 255, 0.8);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+            z-index: 9999; /* Asegurarse que esté por encima de todos los elementos */
+            text-align: center;">
             <p>Cargando...</p>
             <img src="https://mysejahtera.malaysia.gov.my/register/images/loader.gif" alt="Cargando" />
         </div>
@@ -20,7 +30,7 @@ function mostrarIndicadorCarga() {
     $('body').append(indicador); // Añadir el indicador de carga a la página
 }
 
-// Función para ocultar indicador de carga
+// Función para ocultar el indicador de carga
 function ocultarIndicadorCarga() {
     $('#indicadorCarga').remove(); // Eliminar el indicador de carga
 }
@@ -58,7 +68,7 @@ document.addEventListener('DOMContentLoaded', function () {
             return;
         }
 
-    /*    // Mostrar el indicador de carga al iniciar el procesamiento
+ // Mostrar el indicador de carga al iniciar el procesamiento
         mostrarIndicadorCarga();
 
         const reader = new FileReader();
@@ -84,7 +94,7 @@ document.addEventListener('DOMContentLoaded', function () {
             });
         };
         reader.readAsArrayBuffer(file);
-    });*/
+    });
 
     async function getTrackingData(id) {
         try {

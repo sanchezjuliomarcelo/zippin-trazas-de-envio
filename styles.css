@@ -1,17 +1,27 @@
-/* styles.css */
+/* Establecer altura mínima del body para ocupar toda la ventana */
 html, body {
     height: 100%;
     margin: 0;
 }
 
+/* Asegurarse de que el contenedor principal tome toda la altura disponible */
 .container {
-    display: flex;
-    flex-direction: column;
- /* Asegura que el contenido se distribuya entre el encabezado y el footer */
-    min-height: 90%; /* Hace que el contenedor ocupe al menos la altura total de la ventana */
+    min-height: calc(100vh - 100px); /* Restar la altura del footer */
+    padding-bottom: 20px; /* Para que el contenido no esté pegado al footer */
 }
 
-footer {
-    /* Sin cambios necesarios aquí, ya que el espacio se ajusta automáticamente */
-    margin-top: auto; /* Esto empuja el footer hacia abajo */
+/* Footer sticky */
+.footer {
+    height: 100px; /* Ajusta la altura del footer */
+    position: relative;
+    bottom: 0;
+    width: 100%;
+    background-color: #f8f9fa; /* Fondo claro */
+    padding: 20px 0;
+    text-align: center;
+}
+
+/* Ajustar el texto del footer */
+.footer .text-muted {
+    margin: 0;
 }
