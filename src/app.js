@@ -1,15 +1,15 @@
 // Variables para manejar el contador y los productos cargados
-let productosCargados = 0;
+let productosCargados = new Set(); // Usamos Set para almacenar IDs únicos
 
 // Función para borrar productos en pantalla y limpiar el input de archivo
 function borrarProductos() {
     $('#tracking-table tbody').empty();
     $('#productCount').text('0');
-    productosCargados = 0; // Resetear el contador
+    productosCargados.clear(); // Limpiar el Set para el contador
     $('#file-input').val(''); // Limpiar la selección de archivo
 }
 
-// Función para mostrar indicador de carga
+// Función para mostrar indicador de carga con GIF
 function mostrarIndicadorCarga() {
     const indicador = `
         <div id="indicadorCarga" class="text-center">
@@ -17,17 +17,17 @@ function mostrarIndicadorCarga() {
             <img src="https://mysejahtera.malaysia.gov.my/register/images/loader.gif" alt="Cargando" />
         </div>
     `;
-    $('body').append(indicador);
+    $('body').append(indicador); // Añadir el indicador a la página
 }
 
 // Función para ocultar indicador de carga
 function ocultarIndicadorCarga() {
-    $('#indicadorCarga').remove();
+    $('#indicadorCarga').remove(); // Eliminar el indicador de la página
 }
 
 // Función para actualizar el contador de IDs cargados
 function actualizarContador() {
-    $('#productCount').text(productosCargados);
+    $('#productCount').text(productosCargados.size); // Mostrar tamaño del Set (IDs únicos)
 }
 
 document.addEventListener('DOMContentLoaded', function () {
@@ -132,7 +132,8 @@ document.addEventListener('DOMContentLoaded', function () {
             alert(`No se encontraron eventos de seguimiento para el ID ${id}`);
         }
 
-        productosCargados++; // Incrementar el contador de productos cargados
+        // Agregar ID al Set para contar solo los IDs únicos
+        productosCargados.add(id);
         actualizarContador(); // Actualizar el contador en pantalla
 
         document.getElementById('export-button').style.display = 'block';
