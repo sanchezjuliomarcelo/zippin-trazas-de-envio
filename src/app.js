@@ -1,7 +1,12 @@
-// Función para borrar productos en pantalla
+// Variables para manejar el contador y los productos cargados
+let productosCargados = 0;
+
+// Función para borrar productos en pantalla y limpiar el input de archivo
 function borrarProductos() {
     $('#tracking-table tbody').empty();
     $('#productCount').text('0');
+    productosCargados = 0; // Resetear el contador
+    $('#file-input').val(''); // Limpiar la selección de archivo
 }
 
 // Función para mostrar indicador de carga
@@ -20,6 +25,11 @@ function ocultarIndicadorCarga() {
     $('#indicadorCarga').remove();
 }
 
+// Función para actualizar el contador de IDs cargados
+function actualizarContador() {
+    $('#productCount').text(productosCargados);
+}
+
 document.addEventListener('DOMContentLoaded', function () {
     if (!localStorage.getItem('auth')) {
         window.location.href = 'index.html'; 
@@ -31,8 +41,12 @@ document.addEventListener('DOMContentLoaded', function () {
     $('#file-upload-form').append(botonBorrar);
 
     // Evento para borrar productos
-    $('#borrar-productos').click(borrarProductos);
+    $('#borrar-productos').click(function () {
+        borrarProductos();
+        ocultarIndicadorCarga(); // Asegurarse de que el indicador de carga también desaparezca
+    });
 
+    // Evento para manejar el archivo subido
     document.getElementById('file-upload-form').addEventListener('submit', function (e) {
         e.preventDefault();
 
@@ -44,7 +58,7 @@ document.addEventListener('DOMContentLoaded', function () {
             return;
         }
 
-        // Mostrar el indicador de carga
+        // Mostrar el indicador de carga al iniciar el procesamiento
         mostrarIndicadorCarga();
 
         const reader = new FileReader();
@@ -56,14 +70,18 @@ document.addEventListener('DOMContentLoaded', function () {
             const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 }); // Leer sin encabezados
 
             const ids = jsonData.map(row => row[0]); // Obtener IDs de la columna A
+            let promises = [];
+
             ids.forEach(id => {
                 if (id) { // Verificar que el ID no esté vacío
-                    getTrackingData(id);
+                    promises.push(getTrackingData(id));
                 }
             });
 
-            // Ocultar el indicador de carga cuando se terminen de procesar los datos
-            ocultarIndicadorCarga();
+            // Cuando todas las peticiones terminen, ocultar el indicador de carga
+            Promise.all(promises).then(() => {
+                ocultarIndicadorCarga();
+            });
         };
         reader.readAsArrayBuffer(file);
     });
@@ -113,6 +131,9 @@ document.addEventListener('DOMContentLoaded', function () {
         } else {
             alert(`No se encontraron eventos de seguimiento para el ID ${id}`);
         }
+
+        productosCargados++; // Incrementar el contador de productos cargados
+        actualizarContador(); // Actualizar el contador en pantalla
 
         document.getElementById('export-button').style.display = 'block';
     }
