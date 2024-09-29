@@ -1,11 +1,11 @@
-// Variables para manejar el contador y los productos cargados
-let productosCargados = new Set(); // Usamos Set para almacenar IDs únicos
+// Variables para manejar el contador y los envíos cargados
+let enviosCargados = new Set(); // Usamos Set para almacenar IDs únicos de envíos
 
-// Función para borrar productos en pantalla y limpiar el input de archivo
-function borrarProductos() {
+// Función para borrar envíos en pantalla y limpiar el input de archivo
+function borrarEnvios() {
     $('#tracking-table tbody').empty();
-    $('#productCount').text('0');
-    productosCargados.clear(); // Limpiar el Set para el contador
+    $('#enviosCount').text('0'); // Reiniciar el contador en pantalla
+    enviosCargados.clear(); // Limpiar el Set para el contador
     $('#file-input').val(''); // Limpiar la selección de archivo
 }
 
@@ -17,17 +17,17 @@ function mostrarIndicadorCarga() {
             <img src="https://mysejahtera.malaysia.gov.my/register/images/loader.gif" alt="Cargando" />
         </div>
     `;
-    $('body').append(indicador); // Añadir el indicador a la página
+    $('body').append(indicador); // Añadir el indicador de carga a la página
 }
 
 // Función para ocultar indicador de carga
 function ocultarIndicadorCarga() {
-    $('#indicadorCarga').remove(); // Eliminar el indicador de la página
+    $('#indicadorCarga').remove(); // Eliminar el indicador de carga
 }
 
-// Función para actualizar el contador de IDs cargados
+// Función para actualizar el contador de envíos cargados
 function actualizarContador() {
-    $('#productCount').text(productosCargados.size); // Mostrar tamaño del Set (IDs únicos)
+    $('#enviosCount').text(enviosCargados.size); // Mostrar el tamaño del Set (IDs únicos)
 }
 
 document.addEventListener('DOMContentLoaded', function () {
@@ -36,13 +36,13 @@ document.addEventListener('DOMContentLoaded', function () {
         return; 
     }
 
-    // Agregar botón de borrar productos en pantalla
-    const botonBorrar = `<button id="borrar-productos" class="btn btn-danger">Borrar todos los datos</button>`;
+    // Agregar botón de borrar envíos en pantalla
+    const botonBorrar = `<button id="borrar-envios" class="btn btn-danger">Borrar todos los envíos</button>`;
     $('#file-upload-form').append(botonBorrar);
 
-    // Evento para borrar productos
-    $('#borrar-productos').click(function () {
-        borrarProductos();
+    // Evento para borrar envíos
+    $('#borrar-envios').click(function () {
+        borrarEnvios();
         ocultarIndicadorCarga(); // Asegurarse de que el indicador de carga también desaparezca
     });
 
@@ -132,13 +132,14 @@ document.addEventListener('DOMContentLoaded', function () {
             alert(`No se encontraron eventos de seguimiento para el ID ${id}`);
         }
 
-        // Agregar ID al Set para contar solo los IDs únicos
-        productosCargados.add(id);
+        // Agregar ID al Set para contar solo los envíos únicos
+        enviosCargados.add(id);
         actualizarContador(); // Actualizar el contador en pantalla
 
         document.getElementById('export-button').style.display = 'block';
     }
 
+    // Funcionalidad para exportar datos a Excel
     document.getElementById('export-button').addEventListener('click', function () {
         const table = document.getElementById('tracking-table');
         const wb = XLSX.utils.table_to_book(table, { sheet: "Tracking" });
