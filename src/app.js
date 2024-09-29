@@ -68,7 +68,7 @@ document.addEventListener('DOMContentLoaded', function () {
             return;
         }
 
- // Mostrar el indicador de carga al iniciar el procesamiento
+        // Mostrar el indicador de carga al iniciar el procesamiento
         mostrarIndicadorCarga();
 
         const reader = new FileReader();
@@ -130,11 +130,18 @@ document.addEventListener('DOMContentLoaded', function () {
         if (Array.isArray(data)) { // Verificar si data es un array
             data.forEach(trackingEvent => {
                 const row = document.createElement('tr');
+
+                // Separar la fecha y la hora
+                const fecha = new Date(trackingEvent.created_at);
+                const fechaFormateada = fecha.toLocaleDateString(); // Formato de fecha
+                const horaFormateada = fecha.toLocaleTimeString(); // Formato de hora
+
                 row.innerHTML = `
                     <td>${id}</td>
                     <td>${trackingEvent.status.visible_name}</td>
-                    <td>${new Date(trackingEvent.created_at).toLocaleString()}</td>
-                    <td>${trackingEvent.status.name}</td>
+                    <td>${fechaFormateada}</td>
+                    <td>${horaFormateada}</td>
+                    <td>${trackingEvent.status.code}</td>
                 `;
                 tableBody.appendChild(row);
             });
