@@ -58,7 +58,7 @@ document.addEventListener('DOMContentLoaded', function () {
             return;
         }
 
-        // Mostrar el indicador de carga al iniciar el procesamiento
+    /*    // Mostrar el indicador de carga al iniciar el procesamiento
         mostrarIndicadorCarga();
 
         const reader = new FileReader();
@@ -84,7 +84,7 @@ document.addEventListener('DOMContentLoaded', function () {
             });
         };
         reader.readAsArrayBuffer(file);
-    });
+    });*/
 
     async function getTrackingData(id) {
         try {
